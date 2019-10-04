@@ -13,6 +13,9 @@ build:
 	rm -f backman
 	go build -o backman
 
+install:
+	go install
+
 test:
 	source .env && GOARCH=amd64 GOOS=linux go test -v ./...
 
@@ -97,7 +100,7 @@ postgres-client:
 		-e PGPASSWORD='dev-secret' \
 		postgres psql -U 'dev-user' -d 'my_postgres_db'
 
-postgres-test: build
+postgres-test: install
 	scripts/postgres.sh
 
 mongodb: mongodb-network mongodb-stop mongodb-start
