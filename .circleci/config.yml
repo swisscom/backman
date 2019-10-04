@@ -35,7 +35,7 @@ jobs:
           command: |
             wget https://dl.min.io/server/minio/release/linux-amd64/minio -O minio
             chmod +x minio
-            MINIO_ACCESS_KEY_FILE=deadbeef-beefdead MINIO_SECRET_KEY_FILE=beefbeefbeefbeef ./minio server /data
+            MINIO_ACCESS_KEY_FILE=deadbeef-beefdead MINIO_SECRET_KEY_FILE=beefbeefbeefbeef ./minio server /tmp/data
           background: true
 
       # postgres integration tests
