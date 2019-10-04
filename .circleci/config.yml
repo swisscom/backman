@@ -33,8 +33,7 @@ jobs:
       - run:
           name: install minIO server
           command: |
-            curl https://dl.min.io/server/minio/release/linux-amd64/minio
-            cp minio /usr/local/bin/minio
+            wget https://dl.min.io/server/minio/release/linux-amd64/minio -O /usr/local/bin/minio
             chmod +x /usr/local/bin/minio
       - run:
           name: run minIO server
