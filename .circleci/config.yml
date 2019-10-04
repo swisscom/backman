@@ -46,8 +46,4 @@ jobs:
       - run:
           name: install Postgres client
           command: sudo apt install -y postgresql-client || true
-      - run:
-          name: starting backman
-          command: source .env; make run
-          background: true
-      - run: sleep 15; make postgres-test
+      - run: make postgres-test

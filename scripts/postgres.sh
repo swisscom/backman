@@ -23,4 +23,6 @@ echo "postgres is up!"
 # =============================================================================================
 echo "testing postgres integration ..."
 
+go run main.go
+sleep 5
 curl http://john:doe@127.0.0.1:9990/api/v1/state/postgres/my_postgres_db
