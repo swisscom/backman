@@ -24,7 +24,7 @@ echo "postgres is up!"
 echo "testing postgres integration ..."
 
 # starting backman
-backman &
+exec backman &
 sleep 10
 
 curl http://john:doe@localhost:9990/api/v1/state/postgres/my_postgres_db
