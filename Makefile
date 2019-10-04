@@ -100,7 +100,7 @@ postgres-client:
 		-e PGPASSWORD='dev-secret' \
 		postgres psql -U 'dev-user' -d 'my_postgres_db'
 
-postgres-test: install
+postgres-test:
 	scripts/postgres.sh
 
 mongodb: mongodb-network mongodb-stop mongodb-start
