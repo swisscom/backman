@@ -50,4 +50,4 @@ jobs:
           name: starting backman
           command: source .env; make run
           background: true
-      - run: make postgres-test
+      - run: sleep 15; make postgres-test
