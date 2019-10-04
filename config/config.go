@@ -25,6 +25,7 @@ type Config struct {
 }
 
 type S3Config struct {
+	DisableSSL   bool   `json:"disable_ssl"`
 	ServiceLabel string `json:"service_label"`
 	BucketName   string `json:"bucket_name"`
 }
@@ -108,6 +109,9 @@ func Get() *Config {
 			}
 			if len(envConfig.Password) > 0 {
 				config.Password = envConfig.Password
+			}
+			if envConfig.S3.NoSSL {
+				config.S3.NoSSL = envConfig.S3.NoSSL
 			}
 			if len(envConfig.S3.ServiceLabel) > 0 {
 				config.S3.ServiceLabel = envConfig.S3.ServiceLabel

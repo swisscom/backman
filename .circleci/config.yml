@@ -5,7 +5,15 @@ version: 2
 jobs:
   build:
     docker:
+    # primary image for building app
     - image: circleci/golang:1.13
+
+    # service images available at `host: localhost`
+    - image: circleci/postgres:11-alpine
+      environment:
+        POSTGRES_USER: dev-user
+        POSTGRES_PASSWORD: dev-secret
+        POSTGRES_DB: my_postgres_db
 
     branches:
       ignore:
@@ -15,4 +23,32 @@ jobs:
 
     steps:
       - checkout
+      # unit tests
       - run: make test
+
+      # prepare for docker
+      - setup_remote_docker:
+          docker_layer_caching: true
+      # install docker client
+      - run:
+          name: install Docker client
+          command: |
+            VER="17.03.0-ce"
+            curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
+            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+            mv /tmp/docker/* /usr/bin
+
+      # run minio server
+      - run:
+          name: run minIO server
+          command: |
+            docker run -d -p 9000:9000 --name minio \
+              -e "MINIO_ACCESS_KEY=deadbeef-beefdead" \
+              -e "MINIO_SECRET_KEY=beefbeefbeefbeef" \
+              minio/minio server /data
+
+      # postgres integration tests
+      - run:
+          name: install Postgres client
+          command: sudo apt install -y postgresql-client || true
+      - run: make postgres-test

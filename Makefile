@@ -1,4 +1,4 @@
-.PHONY: run gin build test swagger elasticsearch elasticsearch-network elasticsearch-stop elasticsearch-start elasticsearch-data mysql mysql-network mysql-stop mysql-start mysql-client postgres postgres-network postgres-stop postgres-start postgres-client mongodb mongodb-network mongodb-stop mongodb-start mongodb-client cleanup
+.PHONY: run gin build test swagger elasticsearch elasticsearch-network elasticsearch-stop elasticsearch-start elasticsearch-data minio minio-stop minio-start mysql mysql-network mysql-stop mysql-start mysql-client postgres postgres-network postgres-stop postgres-start postgres-client postgres-test mongodb mongodb-network mongodb-stop mongodb-start mongodb-client cleanup
 SHELL := /bin/bash
 
 all: run
@@ -40,6 +40,18 @@ elasticsearch-data:
 	unzip accounts.zip
 	sleep 20
 	curl -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/bank/account/_bulk?pretty' --data-binary @accounts.json
+
+minio: minio-stop minio-start
+	docker logs minio -f
+
+minio-stop:
+	docker rm -f minio || true
+
+minio-start:
+	docker run -d -p 9000:9000 --name minio \
+		-e "MINIO_ACCESS_KEY=deadbeef-beefdead" \
+		-e "MINIO_SECRET_KEY=beefbeefbeefbeef" \
+		minio/minio server /data
 
 mysql: mysql-network mysql-stop mysql-start
 	docker logs mysql -f
@@ -84,6 +96,9 @@ postgres-client:
 	docker exec -it \
 		-e PGPASSWORD='dev-secret' \
 		postgres psql -U 'dev-user' -d 'my_postgres_db'
+
+postgres-test: build
+	scripts/postgres.sh
 
 mongodb: mongodb-network mongodb-stop mongodb-start
 	docker logs mongodb -f

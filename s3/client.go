@@ -21,7 +21,6 @@ func New(app *cfenv.App) *Client {
 	}
 	if len(s3Services) != 1 {
 		log.Fatalf("there must be exactly one defined S3 service, but found %d instead", len(s3Services))
-
 	}
 
 	bucketName := config.Get().S3.BucketName
@@ -35,7 +34,7 @@ func New(app *cfenv.App) *Client {
 	endpoint, _ := s3Services[0].CredentialString("accessHost")
 	accessKeyID, _ := s3Services[0].CredentialString("accessKey")
 	secretAccessKey, _ := s3Services[0].CredentialString("sharedSecret")
-	useSSL := true
+	useSSL := !config.Get().S3.DisableSSL
 
 	minioClient, err := minio.NewV4(endpoint, accessKeyID, secretAccessKey, useSSL)
 	if err != nil {

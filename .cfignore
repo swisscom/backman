@@ -5,6 +5,7 @@
 .gitmodules
 .gitattributes
 .gitignore
+scripts
 Makefile
 README.md
 gin-bin
