@@ -65,7 +65,7 @@ jobs:
       # mysql integration tests
       - run:
           name: install MySQL client
-          command: sudo apt install -y mysql-client || true
+          command: sudo apt install -y mysql-client-5.5 || true
       - run: make mysql-test
 
       # postgres integration tests
