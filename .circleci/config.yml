@@ -23,6 +23,14 @@ jobs:
 
     steps:
       - checkout
+
+      # path
+      - run:
+          name: prepare path
+          command: |
+            mkdir bin
+            echo 'export PATH=/go/src/github.com/swisscom/backman/bin:$PATH' >> $BASH_ENV
+
       # unit tests
       - run: make test
 
@@ -33,14 +41,21 @@ jobs:
       - run:
           name: run minIO server
           command: |
-            wget https://dl.min.io/server/minio/release/linux-amd64/minio -O minio
-            chmod +x minio
-            ./minio server /tmp/data
+            wget https://dl.min.io/server/minio/release/linux-amd64/minio -O /go/src/github.com/swisscom/backman/bin/minio
+            chmod +x /go/src/github.com/swisscom/backman/bin/minio
+            minio server /tmp/data
           background: true
           environment:
             MINIO_UPDATE: 'off'
             MINIO_ACCESS_KEY: deadbeef-beefdead
             MINIO_SECRET_KEY: beefbeefbeefbeef
+
+      # jq
+      - run:
+          name: install jq
+          command: |
+            wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -O /go/src/github.com/swisscom/backman/bin/jq
+            chmod +x /go/src/github.com/swisscom/backman/bin/jq
 
       # postgres integration tests
       - run:
