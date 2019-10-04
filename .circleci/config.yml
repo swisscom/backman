@@ -29,18 +29,17 @@ jobs:
       # build binary
       - run: make build
 
-      # prepare for docker
-      - setup_remote_docker:
-          docker_layer_caching: true
-
-      # run minio server
+      # minIO server
+      - run:
+          name: install minIO server
+          command: |
+            curl https://dl.min.io/server/minio/release/linux-amd64/minio
+            cp minio /usr/local/bin/minio
+            chmod +x /usr/local/bin/minio
       - run:
           name: run minIO server
-          command: |
-            docker run -d -p 9000:9000 --name minio \
-              -e "MINIO_ACCESS_KEY=deadbeef-beefdead" \
-              -e "MINIO_SECRET_KEY=beefbeefbeefbeef" \
-              minio/minio server /data
+          command: MINIO_ACCESS_KEY_FILE=deadbeef-beefdead MINIO_SECRET_KEY_FILE=beefbeefbeefbeef minio server /data
+          background: true
 
       # postgres integration tests
       - run:
