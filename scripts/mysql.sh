@@ -80,6 +80,7 @@ mysql -h 127.0.0.1 -u root -D mysql -e 'select my_column from test_example' | gr
 
 # delete from mysql
 mysql -h 127.0.0.1 -u root -D mysql -e 'delete from test_example'
+mysql -h 127.0.0.1 -u root -D mysql -e "insert into test_example (my_column) values ('backup_different')"
 mysql -h 127.0.0.1 -u root -D mysql -e 'select my_column from test_example' | grep -v 'my_backup_value'
 
 # trigger restore
@@ -90,6 +91,7 @@ sleep 15
 curl -s http://john:doe@127.0.0.1:9990/api/v1/state/mysql/my_mysql_db | grep '"Operation":"restore"' | grep '"Status":"success"'
 
 # read from mysql
+mysql -h 127.0.0.1 -u root -D mysql -e 'select my_column from test_example' | grep -v 'backup_different'
 mysql -h 127.0.0.1 -u root -D mysql -e 'select my_column from test_example' | grep 'my_backup_value'
 
 # delete backup
