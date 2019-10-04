@@ -1,4 +1,4 @@
-.PHONY: run gin build test swagger elasticsearch elasticsearch-network elasticsearch-stop elasticsearch-start elasticsearch-data minio minio-stop minio-start mysql mysql-network mysql-stop mysql-start mysql-client postgres postgres-network postgres-stop postgres-start postgres-client postgres-test mongodb mongodb-network mongodb-stop mongodb-start mongodb-client cleanup
+.PHONY: run gin build test swagger elasticsearch elasticsearch-network elasticsearch-stop elasticsearch-start elasticsearch-data minio minio-stop minio-start mysql mysql-network mysql-stop mysql-start mysql-client mysql-test postgres postgres-network postgres-stop postgres-start postgres-client postgres-test mongodb mongodb-network mongodb-stop mongodb-start mongodb-client cleanup
 SHELL := /bin/bash
 
 all: run
@@ -76,6 +76,9 @@ mysql-client:
 		-e MYSQL_PWD='my-secret-pw' \
 		--network mysql-network \
 		--name mysql-client mysql mysql -hmysql -uroot
+
+mysql-test: build
+	scripts/mysql.sh
 
 postgres: postgres-network postgres-stop postgres-start
 	docker logs postgres -f
