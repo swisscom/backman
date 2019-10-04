@@ -31,13 +31,11 @@ jobs:
 
       # minIO server
       - run:
-          name: install minIO server
-          command: |
-            wget https://dl.min.io/server/minio/release/linux-amd64/minio -O /usr/local/bin/minio
-            chmod +x /usr/local/bin/minio
-      - run:
           name: run minIO server
-          command: MINIO_ACCESS_KEY_FILE=deadbeef-beefdead MINIO_SECRET_KEY_FILE=beefbeefbeefbeef minio server /data
+          command: |
+            wget https://dl.min.io/server/minio/release/linux-amd64/minio -O minio
+            chmod +x minio
+            MINIO_ACCESS_KEY_FILE=deadbeef-beefdead MINIO_SECRET_KEY_FILE=beefbeefbeefbeef ./minio server /data
           background: true
 
       # postgres integration tests
