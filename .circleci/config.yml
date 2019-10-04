@@ -49,8 +49,6 @@ jobs:
           command: sudo apt install -y postgresql-client || true
       - run:
           name: starting backman
-          command: |
-            source .env
-            backman
+          command: source .env; ./backman
           background: true
       - run: make postgres-test
