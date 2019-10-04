@@ -26,9 +26,8 @@ jobs:
       # unit tests
       - run: make test
 
-      # build & install binary
+      # build binary
       - run: make build
-      - run: make install
 
       # prepare for docker
       - setup_remote_docker:
@@ -49,6 +48,6 @@ jobs:
           command: sudo apt install -y postgresql-client || true
       - run:
           name: starting backman
-          command: source .env; ./backman
+          command: source .env; make run
           background: true
       - run: make postgres-test
