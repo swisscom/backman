@@ -69,7 +69,7 @@ mysql-start:
 	docker run -d -p 3306:3306 \
 		-e MYSQL_ROOT_PASSWORD='my-secret-pw' \
 		--network mysql-network \
-		--name mysql mysql
+		--name mysql mysql:5.7
 
 mysql-client:
 	docker run -it --rm \

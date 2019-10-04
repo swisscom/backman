@@ -15,7 +15,7 @@ jobs:
         POSTGRES_PASSWORD: dev-secret
         POSTGRES_DB: my_postgres_db
 
-    - image: circleci/mysql:8
+    - image: circleci/mysql:5.7
       environment:
         MYSQL_DATABASE: mysql
         MYSQL_ROOT_PASSWORD: my-secret-pw
