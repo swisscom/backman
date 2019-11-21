@@ -51,22 +51,27 @@ func Backup(ctx context.Context, s3 *s3.Client, service util.Service, binding *c
 
 	// prepare mysqldump command
 	var command []string
-	command = append(command, "mysqldump")
-	command = append(command, "--single-transaction")
-	command = append(command, "--quick")
-	command = append(command, "--skip-add-locks")
-	command = append(command, "-h")
-	command = append(command, host)
-	command = append(command, "-P")
-	command = append(command, port)
-	command = append(command, "-u")
-	command = append(command, username)
+	command = append(command, "sh")
+	command = append(command, "-c")
+	var command_string_array []string
+	command_string_array = append(command_string_array, "mysqldump")
+	command_string_array = append(command_string_array, "--single-transaction")
+	command_string_array = append(command_string_array, "--quick")
+	command_string_array = append(command_string_array, "--skip-add-locks")
+	command_string_array = append(command_string_array, "-h")
+	command_string_array = append(command_string_array, host)
+	command_string_array = append(command_string_array, "-P")
+	command_string_array = append(command_string_array, port)
+	command_string_array = append(command_string_array, "-u")
+	command_string_array = append(command_string_array, username)
 	if len(database) > 0 {
-		command = append(command, "--databases")
-		command = append(command, database)
+		command_string_array = append(command_string_array, "--databases")
+		command_string_array = append(command_string_array, database)
 	} else {
-		command = append(command, "--all-databases")
+		command_string_array = append(command_string_array, "--all-databases")
 	}
+	command_string_array = append(command_string_array, "| sed -e 's/DEFINER[ ]*=[ ]*[^*]*\\*/\\*/'")
+	command = append(command, strings.Join(command_string_array, " "))
 
 	log.Debugf("executing mysql backup command: %v", strings.Join(command, " "))
 	cmd := exec.CommandContext(ctx, command[0], command[1:]...)
