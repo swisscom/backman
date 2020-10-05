@@ -35,7 +35,8 @@ func Restore(ctx context.Context, s3 *s3.Client, service util.Service, binding *
   command = append(command, "\"$prefix$.$suffix$\"")
   command = append(command, "--nsTo")
   command = append(command, "\"" + database + ".$suffix$\"")
-	command = append(command, "--drop")
+  command = append(command, "--numInsertionWorkersPerCollection")
+  command = append(command, "16")
 	command = append(command, "--gzip")
   command = append(command, "--archive")
 
