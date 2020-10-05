@@ -24,20 +24,20 @@ func Restore(ctx context.Context, s3 *s3.Client, service util.Service, binding *
 
 	state.RestoreStart(service)
 
-  uri, _ := binding.CredentialString("uri")
-  database, _ := binding.CredentialString("database")
+	uri, _ := binding.CredentialString("uri")
+	database, _ := binding.CredentialString("database")
 
-  var dropCommand []string
+	var dropCommand []string
 
-  dropCommand = append(dropCommand, "mongo")
+	dropCommand = append(dropCommand, "mongo")
 	dropCommand = append(dropCommand, uri)
-  dropCommand = append(dropCommand, "--eval")
-  dropCommand = append(dropCommand, "\"db.getCollectionNames().forEach(function(col){db[col].drop()});\"")
+	dropCommand = append(dropCommand, "--eval")
+	dropCommand = append(dropCommand, "\"db.getCollectionNames().forEach(function(col){db[col].drop()});\"")
 
-  log.Debugf("executing mongodb collection drop command: %v", strings.Join(dropCommand, " "))
+	log.Debugf("executing mongodb collection drop command: %v", strings.Join(dropCommand, " "))
 	dropCmd := exec.CommandContext(ctx, dropCommand[0], dropCommand[1:]...)
 
-  // print out stdout/stderr
+	// print out stdout/stderr
 	dropCmd.Stdout = os.Stdout
 	dropCmd.Stderr = os.Stderr
 
@@ -61,14 +61,14 @@ func Restore(ctx context.Context, s3 *s3.Client, service util.Service, binding *
 	command = append(command, "mongorestore")
 	command = append(command, "--uri")
 	command = append(command, "\""+uri+"\"")
-  command = append(command, "--nsFrom")
-  command = append(command, "\"$prefix$.$suffix$\"")
-  command = append(command, "--nsTo")
-  command = append(command, "\"" + database + ".$suffix$\"")
-  command = append(command, "--numInsertionWorkersPerCollection")
-  command = append(command, "16")
+	command = append(command, "--nsFrom")
+	command = append(command, "\"$prefix$.$suffix$\"")
+	command = append(command, "--nsTo")
+	command = append(command, "\""+database+".$suffix$\"")
+	command = append(command, "--numInsertionWorkersPerCollection")
+	command = append(command, "16")
 	command = append(command, "--gzip")
-  command = append(command, "--archive")
+	command = append(command, "--archive")
 
 	log.Debugf("executing mongodb restore command: %v", strings.Join(command, " "))
 	cmd := exec.CommandContext(ctx, command[0], command[1:]...)
