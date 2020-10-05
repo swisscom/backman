@@ -24,7 +24,37 @@ func Restore(ctx context.Context, s3 *s3.Client, service util.Service, binding *
 
 	state.RestoreStart(service)
 
-	uri, _ := binding.CredentialString("uri")
+  uri, _ := binding.CredentialString("uri")
+  database, _ := binding.CredentialString("database")
+
+  var dropCommand []string
+
+  dropCommand = append(dropCommand, "mongo")
+	dropCommand = append(dropCommand, uri)
+  dropCommand = append(dropCommand, "--eval")
+  dropCommand = append(dropCommand, "\"db.getCollectionNames().forEach(function(col){db[col].drop()});\"")
+
+  log.Debugf("executing mongodb collection drop command: %v", strings.Join(dropCommand, " "))
+	dropCmd := exec.CommandContext(ctx, dropCommand[0], dropCommand[1:]...)
+
+  // print out stdout/stderr
+	dropCmd.Stdout = os.Stdout
+	dropCmd.Stderr = os.Stderr
+
+	if err := dropCmd.Start(); err != nil {
+		log.Errorf("could not run mongo drop collections: %v", err)
+		state.RestoreFailure(service)
+		return err
+	}
+
+	if err := dropCmd.Wait(); err != nil {
+		state.RestoreFailure(service)
+		// check for timeout error
+		if ctx.Err() == context.DeadlineExceeded {
+			return fmt.Errorf("mongo drop collections: timeout: %v", ctx.Err())
+		}
+		return fmt.Errorf("mongo drop collections: %v", err)
+	}
 
 	// prepare mongorestore command
 	var command []string
