@@ -45,7 +45,8 @@ These here are the default values backman will use if not configured via JSON:
 	"log_level": "info",
 	"logging_timestamp": false,
 	"disable_web": false,
-	"disable_metrics": false,
+  "disable_metrics": false,
+  "enable_apm": false,
 	"s3": {
 		"service_label": "dynstrg",
 	},
@@ -80,6 +81,7 @@ Possible JSON properties:
 - `password`: optional, HTTP basic auth password
 - `disable_web`: optional, disable web interface and api
 - `disable_metrics`: optional, disable Prometheus metrics endpoint
+- `enable_apm`: optional, enable apm logging, needs to be [configured accordingly](https://www.elastic.co/guide/en/apm/agent/go/current/getting-started.html)
 - `s3.service_label`: optional, defines which service label backman will look for to find the S3-compatible object storage
 - `s3.bucket_name`: optional, bucket to use on S3 storage, backman will use service-instance/binding-name if not configured
 - `services.<service-instance>.schedule`: optional, defines cron schedule for running backups

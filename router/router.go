@@ -10,6 +10,7 @@ import (
 	"github.com/swisscom/backman/config"
 	"github.com/swisscom/backman/router/api"
 	"github.com/swisscom/backman/router/ui"
+	"go.elastic.co/apm/module/apmechov4"
 )
 
 type Router struct {
@@ -26,6 +27,9 @@ func New() *Router {
 	e.HidePort = true
 
 	// middlewares
+	if config.Get().EnableAPM == true {
+		e.Use(apmechov4.Middleware())
+	}
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Secure())
 

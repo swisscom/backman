@@ -25,6 +25,7 @@ type Config struct {
 	S3               S3Config
 	Services         map[string]ServiceConfig
 	Foreground       bool
+	EnableAPM        bool `json:"enable_apm"`
 }
 
 type S3Config struct {
@@ -119,6 +120,9 @@ func Get() *Config {
 			}
 			if envConfig.DisableMetrics {
 				config.DisableMetrics = envConfig.DisableMetrics
+			}
+			if envConfig.EnableAPM {
+				config.EnableAPM = envConfig.EnableAPM
 			}
 			if envConfig.S3.DisableSSL {
 				config.S3.DisableSSL = envConfig.S3.DisableSSL
