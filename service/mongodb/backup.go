@@ -36,7 +36,7 @@ func Backup(ctx context.Context, s3 *s3.Client, service util.Service, binding *c
 	var command []string
 	command = append(command, "mongodump")
 	command = append(command, "--uri")
-	command = append(command, uri)
+	command = append(command, "\""+uri+"\"")
 	command = append(command, "--readPreference")
 	command = append(command, "secondary")
 	command = append(command, "--gzip")
