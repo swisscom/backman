@@ -2,21 +2,18 @@ version: 2.1
 
 workflows:
   version: 2
-  build-deploy:
+  build-workflow:
     jobs:
-    - build:
-        filters:
-          branches:
-            only: master
+    - build
 
 jobs:
   build:
     docker:
     # primary image for building app
-    - image: circleci/golang:1.14
+    - image: circleci/golang:1.15
 
     # service images available at `host: localhost`
-    - image: circleci/postgres:11-alpine
+    - image: circleci/postgres:12-alpine
       environment:
         POSTGRES_USER: dev-user
         POSTGRES_PASSWORD: dev-secret
@@ -67,6 +64,16 @@ jobs:
           chmod +x jq
           sudo mv jq /usr/local/bin/jq
 
+    # postgres integration tests
+    - run:
+        name: install Postgres client
+        command: |
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt buster-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get -y install postgresql-client-12
+    - run: make postgres-test
+
     # mongodb integration tests
     - run:
         name: install MongoDB client
@@ -85,12 +92,6 @@ jobs:
         name: install MySQL client
         command: sudo apt install -y mariadb-client
     - run: make mysql-test
-
-    # postgres integration tests
-    - run:
-        name: install Postgres client
-        command: sudo apt install -y postgresql-client
-    - run: make postgres-test
 
     # redis integration tests
     - run:
