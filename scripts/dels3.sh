@@ -30,10 +30,10 @@ EOF
 s3cmd ls|awk '{print $3}' | while read bucket; do #loop through buckets
 #DEBUG echo bucket: $bucket
 #DEBUG s3cmd ls $bucket
-s3cmd del --recursive $bucket --force #delete bucket content
-s3cmd rb $bucket #remove bucket itself
+  s3cmd del --recursive $bucket --force #delete bucket content
+  s3cmd rb $bucket #remove bucket itself
 done
 
 #cleanup
 cf delete-service-key $service mykey -f #remove service key
-cf delete-service $service -f #delete service
+cf delete-service $service -f #delete service, only works if no other service keys/shares exist
