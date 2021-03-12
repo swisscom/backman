@@ -85,7 +85,8 @@ Possible JSON properties:
 - `unprotected_metrics`: optional, disable HTTP basic auth protection for Prometheus metrics endpoint
 - `s3.service_label`: optional, defines which service label backman will look for to find the S3-compatible object storage
 - `s3.bucket_name`: optional, bucket to use on S3 storage, backman will use service-instance/binding-name if not configured
-- `s3.encryption_key`: optional, defines the key which will be used to encrypt and decrypt backups as they are stored on the S3 can also be passed as an environment variable with the name `BACKMAN_ENCRYPTION_KEY`
+- `s3.encryption_key`: optional, defines the key which will be used to encrypt and decrypt backups as they are stored on the S3 can also be passed as an environment variable with the name `BACKMAN_ENCRYPTION_KEY`. This is done at the client-side
+- `s3.server_side_encryption`: optional, use s3 managed server side encryption (only possible value for now is "S3")
 - `services.<service-instance>.schedule`: optional, defines cron schedule for running backups
 - `services.<service-instance>.timeout`: optional, backman will abort a running backup/restore if timeout is exceeded
 - `services.<service-instance>.retention.days`: optional, specifies how long backman will keep backups on S3 at maximum for this service instance

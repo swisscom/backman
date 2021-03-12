@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"errors"
+	"github.com/minio/minio-go/v6/pkg/encrypt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -34,6 +35,7 @@ type S3Config struct {
 	ServiceName   string `json:"service_name"`
 	BucketName    string `json:"bucket_name"`
 	EncryptionKey string `json:"encryption_key"`
+	ServerSideEncryption string `json:"server_side_encryption"`
 }
 
 type ServiceConfig struct {
@@ -142,6 +144,12 @@ func Get() *Config {
 			}
 			if len(envConfig.S3.EncryptionKey) > 0 {
 				config.S3.EncryptionKey = envConfig.S3.EncryptionKey
+			}
+			if len(envConfig.S3.ServerSideEncryption) > 0 {
+				if envConfig.S3.ServerSideEncryption != string(encrypt.S3) {
+					log.Fatalln("only S3 mananged encryption(SSE-S3) is supported for now")
+				}
+				config.S3.ServerSideEncryption = envConfig.S3.ServerSideEncryption
 			}
 			for serviceName, serviceConfig := range envConfig.Services {
 				mergedServiceConfig := config.Services[serviceName]

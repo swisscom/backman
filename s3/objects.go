@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
+	"github.com/minio/minio-go/v6/pkg/encrypt"
 	"io"
 	"io/ioutil"
 	"sort"
@@ -57,7 +58,12 @@ func (s *Client) UploadWithContext(ctx context.Context, object string, reader io
 		}
 	}
 
-	n, err := s.Client.PutObjectWithContext(ctx, s.BucketName, object, uploadReader, size, minio.PutObjectOptions{ContentType: "application/gzip"})
+	putOptions := minio.PutObjectOptions{ContentType: "application/gzip"}
+	if len(config.Get().S3.ServerSideEncryption) != 0 {
+		putOptions.ServerSideEncryption = encrypt.NewSSE()
+	}
+
+	n, err := s.Client.PutObjectWithContext(ctx, s.BucketName, object, uploadReader, size, putOptions)
 	if err != nil {
 		return err
 	}
@@ -80,6 +86,10 @@ func (s *Client) Download(object string) (io.Reader, error) {
 
 func (s *Client) DownloadWithContext(ctx context.Context, object string) (io.ReadCloser, error) {
 	log.Debugf("download S3 object [%s]", object)
+	getOptions := minio.GetObjectOptions{}
+	if len(config.Get().S3.ServerSideEncryption) != 0 {
+		getOptions.ServerSideEncryption = encrypt.NewSSE()
+	}
 	reader, err := s.Client.GetObjectWithContext(ctx, s.BucketName, object, minio.GetObjectOptions{})
 	if err != nil {
 		return nil, err
