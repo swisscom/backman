@@ -45,6 +45,7 @@ func Backup(ctx context.Context, s3 *s3.Client, service util.Service, binding *c
 	if service.DisableColumnStatistics {
 		command = append(command, "--column-statistics=0")
 	}
+	command = append(command, "--hex-blob=TRUE")
 	command = append(command, "-h")
 	command = append(command, credentials.Hostname)
 	command = append(command, "-P")
@@ -62,16 +63,23 @@ func Backup(ctx context.Context, s3 *s3.Client, service util.Service, binding *c
 
 
 	log.Debugf("executing mysql backup command: %v", strings.Join(command, " "))
-	cmd := exec.CommandContext(ctx, command[0], command[1:]...)
+	mysqldumpCmd := exec.CommandContext(ctx, command[0], command[1:]...)
+    sedCmd := exec.CommandContext(ctx, "sed", "-e", "s/DEFINER=[^*]*\\*/\\*/g")
 
 	// capture stdout to pass to gzipping buffer
-	outPipe, err := cmd.StdoutPipe()
+	outPipe, _ := sedCmd.StdoutPipe()
+	_, err := mysqldumpCmd.StdoutPipe()
 	if err != nil {
 		log.Errorf("could not get stdout pipe for mysqldump: %v", err)
 		state.BackupFailure(service)
 		return err
 	}
 	defer outPipe.Close()
+
+    // pipe mysqldumpCmd to sedCmd
+    sedPipeR, sedPipeW := io.Pipe()
+    mysqldumpCmd.Stdout = sedPipeW
+    sedCmd.Stdin = sedPipeR
 
 	var uploadWait sync.WaitGroup
 	uploadCtx, uploadCancel := context.WithCancel(context.Background()) // allows upload to be cancelable, in case backup times out
@@ -111,15 +119,16 @@ func Backup(ctx context.Context, s3 *s3.Client, service util.Service, binding *c
 
 	// capture and read stderr in case an error occurs
 	var errBuf bytes.Buffer
-	cmd.Stderr = &errBuf
+	mysqldumpCmd.Stderr = &errBuf
 
-	if err := cmd.Start(); err != nil {
+	if err := mysqldumpCmd.Start(); err != nil {
 		log.Errorf("could not run mysqldump: %v", err)
 		state.BackupFailure(service)
 		return err
 	}
+	sedCmd.Start()
 
-	if err := cmd.Wait(); err != nil {
+	if err := mysqldumpCmd.Wait(); err != nil {
 		state.BackupFailure(service)
 		// check for timeout error
 		if ctx.Err() == context.DeadlineExceeded {
@@ -129,7 +138,8 @@ func Backup(ctx context.Context, s3 *s3.Client, service util.Service, binding *c
 		log.Errorln(strings.TrimRight(errBuf.String(), "\r\n"))
 		return fmt.Errorf("mysqldump: %v", err)
 	}
-
+	sedPipeW.Close()
+    sedCmd.Wait()
 	uploadWait.Wait() // wait for upload to have finished
 	if err == nil {
 		state.BackupSuccess(service)
