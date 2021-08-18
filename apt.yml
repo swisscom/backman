@@ -1,13 +1,13 @@
 ---
 keys:
 - https://www.postgresql.org/media/keys/ACCC4CF8.asc
-- https://www.mongodb.org/static/pgp/server-4.4.asc
+- https://www.mongodb.org/static/pgp/server-5.0.asc
 repos:
 - deb https://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main
-- deb https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse
+- deb https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/5.0 multiverse
 packages:
 - mysql-client
 - postgresql-client-12
-- mongodb-org-tools=4.4.0
-- mongodb-org-shell=4.4.0
+- mongodb-database-tools=100.4.1
+- mongodb-org-shell=5.0.2
 - redis-tools
