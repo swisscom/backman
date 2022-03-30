@@ -32,6 +32,7 @@ func Restore(ctx context.Context, s3 *s3.Client, service util.Service, binding *
 	command = append(command, "--uri")
 	command = append(command, uri)
 	command = append(command, "--gzip")
+	command = append(command, "--drop")
 	command = append(command, "--archive")
 
 	log.Debugf("executing mongodb restore command: %v", strings.Join(command, " "))
