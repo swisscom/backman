@@ -36,7 +36,7 @@ RUN curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
    tee /etc/apt/sources.list.d/mongodb-org-7.0.list
 RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash -
 RUN apt-get -y $package_args update && \
-  apt-get -y $package_args install mysql-client postgresql-client-15 mongodb-database-tools=100.9.0 mongodb-org-tools=7.0.7 mongodb-org-shell=7.0.7 redis-tools nodejs openssh-server bash vim-tiny && \
+  apt-get -y $package_args install mysql-client postgresql-client-16 mongodb-database-tools=100.9.0 mongodb-org-tools=7.0.7 mongodb-org-shell=7.0.7 redis-tools nodejs openssh-server bash vim-tiny && \
   apt-get clean && \
   find /usr/share/doc/*/* ! -name copyright | xargs rm -rf && \
   rm -rf \
