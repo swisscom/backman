@@ -6,8 +6,8 @@ RUN echo "debconf debconf/frontend select noninteractive" | debconf-set-selectio
   apt-get -y $package_args update && \
   apt-get -y $package_args dist-upgrade && \
   apt-get -y $package_args install curl ca-certificates gnupg tzdata git
-RUN curl --location --output go.tar.gz "https://go.dev/dl/go1.23.11.linux-amd64.tar.gz" && \
-  echo "80899df77459e0b551d2eb8800ad6eb47023b99cccbf8129e7b5786770b948c5  go.tar.gz" | sha256sum -c  && \
+RUN curl --location --output go.tar.gz "https://go.dev/dl/go1.23.12.linux-amd64.tar.gz" && \
+  echo "d3847fef834e9db11bf64e3fb34db9c04db14e068eeb064f49af747010454f90  go.tar.gz" | sha256sum -c  && \
   tar -C /usr/local -xzf go.tar.gz && \
   rm go.tar.gz
 
@@ -36,7 +36,7 @@ RUN curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
    tee /etc/apt/sources.list.d/mongodb-org-7.0.list
 RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash -
 RUN apt-get -y $package_args update && \
-  apt-get -y $package_args install mysql-client postgresql-client-17 mongodb-database-tools=100.9.5 mongodb-org-tools=7.0.15 mongodb-org-shell=7.0.15 redis-tools nodejs openssh-server bash vim-tiny && \
+  apt-get -y $package_args install mysql-client postgresql-client-17 mongodb-database-tools=100.13.0 mongodb-org-tools=7.0.24 mongodb-org-shell=7.0.24 redis-tools nodejs openssh-server bash vim-tiny && \
   apt-get clean && \
   find /usr/share/doc/*/* ! -name copyright | xargs rm -rf && \
   rm -rf \

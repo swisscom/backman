@@ -14,7 +14,7 @@ jobs:
   build:
     docker:
     # primary image for building app
-    - image: cimg/go:1.23.9-node
+    - image: cimg/go:1.23.12-node
 
     # service images available at `host: localhost`
     - image: circleci/postgres:12-alpine
@@ -95,7 +95,7 @@ jobs:
           sudo echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | \
           sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
           sudo apt-get update
-          sudo apt-get install -y mongodb-database-tools=100.9.5 mongodb-org-tools=7.0.15 mongodb-org-shell=7.0.15 mongodb-mongosh=2.2.2
+          sudo apt-get install -y mongodb-database-tools=100.13.0 mongodb-org-tools=7.0.24 mongodb-org-shell=7.0.24 mongodb-mongosh=2.5.8
     - run: make mongodb-test
 
     # redis integration tests
