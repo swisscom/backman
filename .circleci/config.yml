@@ -14,7 +14,7 @@ jobs:
   build:
     docker:
     # primary image for building app
-    - image: cimg/go:1.23.12-node
+    - image: cimg/go:1.23.9-node
 
     # service images available at `host: localhost`
     - image: circleci/postgres:12-alpine
