@@ -22,6 +22,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/nebhale/client-go/internal"
 )
@@ -75,9 +76,13 @@ type CacheBinding struct {
 	Delegate Binding
 
 	cache map[string][]byte
+	mutex sync.Mutex
 }
 
 func (c *CacheBinding) GetAsBytes(key string) ([]byte, bool) {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+
 	if c.cache == nil {
 		c.cache = make(map[string][]byte)
 	}

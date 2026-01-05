@@ -26,6 +26,17 @@ The following types of changes will be recorded in this file:
 
 - placeholder
 
+## [v2.14.0] - 2025-11-16
+
+### Changed
+
+- (GH-302) Go Dependency: Bump github.com/stretchr/testify from 1.9.0 to 1.10.0
+
+### Fixed
+
+- (GH-311) fix: adjust WorkflowURLBaseDomain for both new and old urls
+  - credit: [@calindima](https://github.com/calindima)
+
 ## [v2.13.0] - 2024-09-08
 
 ### Added
@@ -559,7 +570,8 @@ The following types of changes will be recorded in this file:
 
 - add initial functionality of sending messages to MS Teams channel
 
-[Unreleased]: https://github.com/atc0005/go-teams-notify/compare/v2.13.0...HEAD
+[Unreleased]: https://github.com/atc0005/go-teams-notify/compare/v2.14.0...HEAD
+[v2.14.0]: https://github.com/atc0005/go-teams-notify/releases/tag/v2.14.0
 [v2.13.0]: https://github.com/atc0005/go-teams-notify/releases/tag/v2.13.0
 [v2.12.0]: https://github.com/atc0005/go-teams-notify/releases/tag/v2.12.0
 [v2.11.0]: https://github.com/atc0005/go-teams-notify/releases/tag/v2.11.0
