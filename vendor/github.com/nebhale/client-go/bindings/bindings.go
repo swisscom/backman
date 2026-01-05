@@ -84,11 +84,6 @@ func Find(bindings []Binding, name string) (Binding, bool) {
 	return nil, false
 }
 
-// Filter returns zero or more Bindings with a given type.  Equivalent to FilterWithProvider with an empty provider.
-func Filter(bindings []Binding, bindingType string) []Binding {
-	return FilterWithProvider(bindings, bindingType, "")
-}
-
 // FilterWithProvider returns zero or more Bindings with a given type and provider.  If type or provider are empty, the
 // result is not filtered on that argument.  Comparisons are case-insensitive.
 func FilterWithProvider(bindings []Binding, bindingType string, provider string) []Binding {
@@ -111,4 +106,9 @@ func FilterWithProvider(bindings []Binding, bindingType string, provider string)
 	}
 
 	return match
+}
+
+// Filter returns zero or more Bindings with a given type.  Equivalent to FilterWithProvider with an empty provider.
+func Filter(bindings []Binding, bindingType string) []Binding {
+	return FilterWithProvider(bindings, bindingType, "")
 }
