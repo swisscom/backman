@@ -41,7 +41,7 @@ install:
 .PHONY: test
 ## test: runs go test with the race detector
 test: build
-	@source _fixtures/env; GOARCH=amd64 GOOS=linux go test -v -race ./...
+	@source _fixtures/env; go test -v -race ./...
 
 .PHONY: init
 ## init: sets up go modules

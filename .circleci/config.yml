@@ -14,7 +14,7 @@ jobs:
   build:
     docker:
     # primary image for building app
-    - image: cimg/go:1.23.9-node
+    - image: cimg/go:1.24.13-node
 
     # service images available at `host: localhost`
     - image: circleci/postgres:12-alpine
@@ -82,8 +82,8 @@ jobs:
     - run:
         name: install Postgres client v17
         command: |
-          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt jammy-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /usr/share/keyrings/pgdg.gpg
+          echo "deb [signed-by=/usr/share/keyrings/pgdg.gpg] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
           sudo apt-get update
           sudo apt-get -y install postgresql-client-17
     - run: make postgres-test
@@ -91,9 +91,8 @@ jobs:
     - run:
         name: install MongoDB client v7
         command: |
-          curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor && \
-          sudo echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | \
-          sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+          curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg
+          echo "deb [arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
           sudo apt-get update
           sudo apt-get install -y mongodb-database-tools=100.13.0 mongodb-org-tools=7.0.24 mongodb-org-shell=7.0.24 mongodb-mongosh=2.5.8
     - run: make mongodb-test

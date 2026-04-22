@@ -1,21 +1,8 @@
-FROM --platform=linux/amd64 ubuntu:22.04
-
-ARG package_args='--allow-downgrades --allow-remove-essential --allow-change-held-packages --no-install-recommends'
-RUN echo "debconf debconf/frontend select noninteractive" | debconf-set-selections && \
-  export DEBIAN_FRONTEND=noninteractive && \
-  apt-get -y $package_args update && \
-  apt-get -y $package_args dist-upgrade && \
-  apt-get -y $package_args install curl ca-certificates gnupg tzdata git
-RUN curl --location --output go.tar.gz "https://go.dev/dl/go1.23.12.linux-amd64.tar.gz" && \
-  echo "d3847fef834e9db11bf64e3fb34db9c04db14e068eeb064f49af747010454f90  go.tar.gz" | sha256sum -c  && \
-  tar -C /usr/local -xzf go.tar.gz && \
-  rm go.tar.gz
-
-ENV PATH=$PATH:/usr/local/go/bin
+FROM golang:1.24.13 AS builder
 
 WORKDIR /go/src/github.com/swisscom/backman
 COPY . .
-RUN go build -o backman
+RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -o backman
 
 FROM --platform=linux/amd64 ubuntu:22.04
 LABEL maintainer="JamesClonk <jamesclonk@jamesclonk.ch>"
@@ -53,7 +40,7 @@ ENV PATH=$PATH:/home/backman/app
 WORKDIR /home/backman/app
 COPY public ./public/
 COPY static ./static/
-COPY --from=0 /go/src/github.com/swisscom/backman/backman ./backman
+COPY --from=builder /go/src/github.com/swisscom/backman/backman ./backman
 
 RUN chmod +x /home/backman/app/backman && \
   chown -R backman:backman /home/backman/app
