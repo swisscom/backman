@@ -1,6 +1,6 @@
 module github.com/swisscom/backman
 
-go 1.23.12
+go 1.24.13
 
 require (
 	github.com/atc0005/go-teams-notify/v2 v2.14.0

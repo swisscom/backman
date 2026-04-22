@@ -23,6 +23,7 @@ These here are the default values backman will use if not configured otherwise:
 	"disable_restore": false,
 	"disable_metrics_logging": false,
 	"disable_health_logging": false,
+	"disable_all_column_statistics": false,
 	"unprotected_metrics": false,
 	"unprotected_health": false,
 	"notifications": {},
@@ -43,6 +44,7 @@ A more comprehensive example of possible configuration options could look like t
 	"disable_restore": true,
 	"disable_metrics_logging": false,
 	"disable_health_logging": true,
+	"disable_all_column_statistics": true,
 	"unprotected_metrics": false,
 	"unprotected_health": true,
 	"notifications": {
@@ -121,6 +123,7 @@ or through the specific environment variables `$BACKMAN_USERNAME` and `$BACKMAN_
 - `disable_restore`: optional, disable restore function on API and web. It can be used to mitigate damage in case backman credentials are leaked. Enable it just before you might need to restore.
 - `disable_metrics_logging`: optional, disables logging of HTTP requests towards /metrics endpoint
 - `disable_health_logging`: optional, disables logging of HTTP requests towards /healthz endpoint
+- `disable_all_column_statistics`: optional / MySQL-specific, forces disabling export of column statistics for all MySQL backups (overrides `services.<service-instance>.disable_column_statistics`)
 - `unprotected_metrics`: optional, disable *HTTP Basic Auth* protection for Prometheus /metrics endpoint
 - `unprotected_health`: optional, disable *HTTP Basic Auth* protection for /healthz endpoint
 - `notifications.teams.webhook`: optional, setting a webhook URL will enable MS Teams notifications about backups
@@ -147,7 +150,7 @@ or through the specific environment variables `$BACKMAN_USERNAME` and `$BACKMAN_
 - `services.<service-instance>.retention.days`: optional, specifies how long backman will keep backups on S3 at maximum for this service instance
 - `services.<service-instance>.retention.files`: optional, specifies how maximum number of files backman will keep on S3 for this service instance
 - `services.<service-instance>.direct_s3`: optional / Elasticsearch-specific, bypasses backman internal backup stream and encryption entirely, streaming directly from/to S3 via elasticdump
-- `services.<service-instance>.disable_column_statistics`: optional / MySQL-specific, allows for disabling export of column statistics. Set to `true` to avoid issues with pre-8.0 versions of MySQL
+- `services.<service-instance>.disable_column_statistics`: optional / MySQL-specific, allows for disabling export of column statistics. Set to `true` to avoid issues with pre-8.0 versions of MySQL (ignored if `disable_all_column_statistics` is `true`)
 - `services.<service-instance>.force_import`: optional / MySQL-specific. Set to `true` to use the `--force` flag for mysql, ignoring any errors that might occur while importing backups
 - `services.<service-instance>.read_preference`: optional / MongoDB-specific. Configures mongodump read preference mode. Defaults to "secondary" if not specified
 - `services.<service-instance>.log_stderr`: optional. Outputs stderr of backup process to stdout in case of errors or timeouts

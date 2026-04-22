@@ -23,6 +23,7 @@ func Test_Config_GetWithoutBindings(t *testing.T) {
 	assert.Equal(t, true, c.LoggingTimestamp)                                     // _fixtures/env specifies "true", overriding "false" from config.json
 	assert.Equal(t, "john", c.Username)                                           // from .env, overriding config.json
 	assert.Equal(t, "McClane", c.Password)                                        // Setenv 'PASSWORD' overrides _fixtures/env and config.json
+	assert.Equal(t, false, c.DisableAllColumnStatistics)                          // should be false by default
 	assert.Equal(t, "dynstrg", c.S3.ServiceLabel)                                 // from env/config.json
 	assert.Equal(t, "my-database-backups", c.S3.BucketName)                       // from env/config.json
 	assert.Equal(t, "13 37 0/6 * * *", c.Services["my_postgres_db"].Schedule)     // from .env, overriding config.json
@@ -49,6 +50,7 @@ func Test_Config_GetWithBindings(t *testing.T) {
 	assert.Equal(t, true, c.LoggingTimestamp)                               // from config.json
 	assert.Equal(t, "Hans", c.Username)                                     // Setenv 'USERNAME' overrides config.json
 	assert.Equal(t, "doe", c.Password)                                      // from config.json
+	assert.Equal(t, false, c.DisableAllColumnStatistics)                    // should be false by default
 	assert.Equal(t, "x-secret-key", c.S3.EncryptionKey)                     // from .env, overriding  config.json
 	assert.Equal(t, "127.0.0.1:9000", c.S3.Host)                            // from config.json
 	assert.Equal(t, "dynstrg", c.S3.ServiceLabel)                           // from config.json
