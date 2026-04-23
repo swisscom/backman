@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
 	"github.com/swisscom/backman/config"
 	"github.com/swisscom/backman/log"
 	"github.com/swisscom/backman/service/elasticsearch"
@@ -19,10 +18,6 @@ import (
 	"github.com/swisscom/backman/service/redis"
 	"github.com/swisscom/backman/state"
 )
-
-func init() {
-	rand.Seed(time.Now().UTC().UnixNano())
-}
 
 func Init() {
 	mergeServiceBindings() // find and merge SERVICE_BINDING_ROOT/<service> into config.Services
