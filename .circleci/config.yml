@@ -9,6 +9,63 @@ workflows:
           branches:
             ignore:
             - master
+    - postgres-compat:
+        matrix:
+          parameters:
+            postgres_version: ["14", "15", "16", "17"]
+        filters:
+          branches:
+            ignore:
+            - master
+
+commands:
+  install-postgres-client-18:
+    description: Install the PostgreSQL v18 client tools from the official PGDG apt repo.
+    steps:
+    - run:
+        name: install Postgres client v18
+        command: |
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /usr/share/keyrings/pgdg.gpg
+          echo "deb [signed-by=/usr/share/keyrings/pgdg.gpg] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update
+          sudo apt-get -y install postgresql-client-18
+
+  install-test-tooling:
+    description: Install jq, killall and a background minIO server used by the integration tests.
+    steps:
+    - run:
+        name: install killall
+        command: |
+          sudo apt-get update
+          sudo apt-get -y install psmisc
+    - run:
+        name: install jq
+        command: |
+          wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -qO jq
+          chmod +x jq
+          sudo mv jq /usr/local/bin/jq
+    - run:
+        name: run minIO server
+        command: |
+          wget https://dl.min.io/server/minio/release/linux-amd64/minio -qO minio
+          chmod +x minio
+          sudo mv minio /usr/local/bin/minio
+          minio server /tmp/data
+        background: true
+        environment:
+          MINIO_UPDATE: 'off'
+          MINIO_ACCESS_KEY: 6d611e2d-330b-4e52-a27c-59064d6e8a62
+          MINIO_SECRET_KEY: eW9sbywgeW91IGhhdmUganVzdCBiZWVuIHRyb2xsZWQh
+
+  install-backman-binary:
+    description: Build the backman binary and install it to /usr/local/bin so the integration scripts can find it.
+    steps:
+    - run: make build
+    - run:
+        name: install binary
+        command: |
+          sudo cp /home/circleci/project/backman /usr/local/bin/backman
+          sudo chmod +x /usr/local/bin/backman
 
 jobs:
   build:
@@ -17,7 +74,9 @@ jobs:
     - image: cimg/go:1.24.13-node
 
     # service images available at `host: localhost`
-    - image: circleci/postgres:12-alpine
+    # postgres server defaults to v18 here so the main build exercises the v18 client
+    # against the v18 server. Older server versions are covered by the postgres-compat job.
+    - image: postgres:18-alpine
       environment:
         POSTGRES_USER: dev-user
         POSTGRES_PASSWORD: dev-secret
@@ -41,51 +100,14 @@ jobs:
     # unit tests
     - run: make test
 
-    # build binary
-    - run: make build
-    - run:
-        name: install binary
-        command: |
-          chmod +x /home/circleci/project/backman
-          sudo cp /home/circleci/project/backman /usr/local/bin/backman
-          sudo chmod +x /usr/local/bin/backman
+    # build & install binary
+    - install-backman-binary
 
-    # minIO server
-    - run:
-        name: run minIO server
-        command: |
-          wget https://dl.min.io/server/minio/release/linux-amd64/minio -qO minio
-          chmod +x minio
-          sudo mv minio /usr/local/bin/minio
-          minio server /tmp/data
-        background: true
-        environment:
-          MINIO_UPDATE: 'off'
-          MINIO_ACCESS_KEY: 6d611e2d-330b-4e52-a27c-59064d6e8a62
-          MINIO_SECRET_KEY: eW9sbywgeW91IGhhdmUganVzdCBiZWVuIHRyb2xsZWQh
+    # tooling
+    - install-test-tooling
 
-    # killall
-    - run:
-        name: install killall
-        command: |
-          sudo apt-get update
-          sudo apt-get -y install psmisc
-
-    # jq
-    - run:
-        name: install jq
-        command: |
-          wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -qO jq
-          chmod +x jq
-          sudo mv jq /usr/local/bin/jq
-
-    - run:
-        name: install Postgres client v17
-        command: |
-          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /usr/share/keyrings/pgdg.gpg
-          echo "deb [signed-by=/usr/share/keyrings/pgdg.gpg] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
-          sudo apt-get update
-          sudo apt-get -y install postgresql-client-17
+    # postgres integration test against the default (v18) server
+    - install-postgres-client-18
     - run: make postgres-test
 
     - run:
@@ -108,3 +130,32 @@ jobs:
         name: install MySQL client
         command: sudo apt install -y mariadb-client
     - run: make mysql-test
+
+  # postgres-compat verifies the v18 client can still back up older Postgres
+  # servers we support. One run per parameterized server version.
+  postgres-compat:
+    parameters:
+      postgres_version:
+        description: PostgreSQL server major version to run as the secondary container.
+        type: string
+    docker:
+    - image: cimg/go:1.24.13-node
+
+    - image: postgres:<< parameters.postgres_version >>-alpine
+      environment:
+        POSTGRES_USER: dev-user
+        POSTGRES_PASSWORD: dev-secret
+        POSTGRES_DB: my_postgres_db
+
+    steps:
+    - checkout
+    - install-backman-binary
+    - install-test-tooling
+    - install-postgres-client-18
+    - run:
+        name: report client/server versions under test
+        command: |
+          echo "postgres client: $(psql --version)"
+          echo "pg_dump:         $(pg_dump --version)"
+          echo "postgres server: << parameters.postgres_version >>"
+    - run: make postgres-test
