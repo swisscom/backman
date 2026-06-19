@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
@@ -94,7 +93,7 @@ func new() *Config {
 
 	// first, load the config file if it exists
 	if _, err := os.Stat(configFile); err == nil {
-		data, err := ioutil.ReadFile(configFile)
+		data, err := os.ReadFile(configFile)
 		if err != nil {
 			log.Printf("could not load '%s'\n", configFile)
 			log.Fatalln(err.Error())
