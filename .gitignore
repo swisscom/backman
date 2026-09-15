@@ -30,6 +30,7 @@ _testmain.go
 .glide/
 
 # ---------
+.crush
 .env
 .env*
 .example*

@@ -47,7 +47,7 @@ commands:
     - run:
         name: run minIO server
         command: |
-          wget https://dl.min.io/server/minio/release/linux-amd64/minio -qO minio
+          wget https://github.com/minio/minio/releases/download/RELEASE.2025-09-07T16-13-09Z/minio.linux-amd64.RELEASE.2025-09-07T16-13-09Z -qO minio
           chmod +x minio
           sudo mv minio /usr/local/bin/minio
           minio server /tmp/data
@@ -71,7 +71,7 @@ jobs:
   build:
     docker:
     # primary image for building app
-    - image: cimg/go:1.24.13-node
+    - image: cimg/go:1.26.8-node
 
     # service images available at `host: localhost`
     # postgres server defaults to v18 here so the main build exercises the v18 client
@@ -139,7 +139,7 @@ jobs:
         description: PostgreSQL server major version to run as the secondary container.
         type: string
     docker:
-    - image: cimg/go:1.24.13-node
+    - image: cimg/go:1.26.8-node
 
     - image: postgres:<< parameters.postgres_version >>-alpine
       environment:

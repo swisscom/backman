@@ -3,7 +3,7 @@ package ui
 import (
 	"io"
 	"strings"
-	"text/template"
+	"html/template"
 
 	"github.com/dustin/go-humanize"
 	"github.com/hako/durafmt"
