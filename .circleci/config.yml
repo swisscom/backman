@@ -71,7 +71,7 @@ jobs:
   build:
     docker:
     # primary image for building app
-    - image: cimg/go:1.24.13-node
+    - image: cimg/go:1.26.8-node
 
     # service images available at `host: localhost`
     # postgres server defaults to v18 here so the main build exercises the v18 client
@@ -139,7 +139,7 @@ jobs:
         description: PostgreSQL server major version to run as the secondary container.
         type: string
     docker:
-    - image: cimg/go:1.24.13-node
+    - image: cimg/go:1.26.8-node
 
     - image: postgres:<< parameters.postgres_version >>-alpine
       environment:
