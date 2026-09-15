@@ -47,7 +47,7 @@ commands:
     - run:
         name: run minIO server
         command: |
-          wget https://dl.min.io/server/minio/release/linux-amd64/minio -qO minio
+          wget https://github.com/minio/minio/releases/download/RELEASE.2025-09-07T16-13-09Z/minio.linux-amd64.RELEASE.2025-09-07T16-13-09Z -qO minio
           chmod +x minio
           sudo mv minio /usr/local/bin/minio
           minio server /tmp/data
