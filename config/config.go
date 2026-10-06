@@ -31,6 +31,7 @@ type Config struct {
 	Username                   string
 	Password                   string
 	DisableWeb                 bool               `json:"disable_web"`
+	DisableUI                  bool               `json:"disable_ui"`
 	DisableMetrics             bool               `json:"disable_metrics"`
 	DisableRestore             bool               `json:"disable_restore"`
 	DisableMetricsLogging      bool               `json:"disable_metrics_logging"`
@@ -131,6 +132,9 @@ func new() *Config {
 		}
 		if envConfig.DisableWeb {
 			config.DisableWeb = envConfig.DisableWeb
+		}
+		if envConfig.DisableUI {
+			config.DisableUI = envConfig.DisableUI
 		}
 		if envConfig.DisableMetrics {
 			config.DisableMetrics = envConfig.DisableMetrics

@@ -7,6 +7,7 @@ export BACKMAN_CONFIG='{
   "username": "john",
   "password": "doe",
   "disable_web": false,
+  "disable_ui": false,
   "disable_metrics": false,
   "disable_restore": false,
   "disable_metrics_logging": false,

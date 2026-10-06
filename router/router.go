@@ -53,10 +53,13 @@ func New() *Router {
 	if !config.Get().DisableWeb {
 		// setup API routes
 		r.api.RegisterRoutes(r.echo)
-		// setup Web-UI routes
-		r.ui.RegisterRoutes(r.echo)
-		// setup Web-UI rendering
-		r.ui.RegisterRenderer(r.echo)
+
+		if !config.Get().DisableUI {
+			// setup Web-UI routes
+			r.ui.RegisterRoutes(r.echo)
+			// setup Web-UI rendering
+			r.ui.RegisterRenderer(r.echo)
+		}
 	}
 
 	return r
